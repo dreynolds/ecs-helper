@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
+	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/davidtiberius/ecs-helper/internal/aws"
 	"github.com/davidtiberius/ecs-helper/internal/ui"
 	"github.com/spf13/cobra"
@@ -40,12 +41,17 @@ func describeService(cmd *cobra.Command, client *ecs.Client, services []string) 
 		return fmt.Errorf("describe services: %w", err)
 	}
 	for _, service := range out.Services {
-		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Service:"), ui.ValueStyle.Render(valueOrEmpty(service.ServiceName)))
-		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Status:"), ui.ValueStyle.Render(valueOrEmpty(service.Status)))
-		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Desired Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", service.DesiredCount)))
-		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Running Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", service.RunningCount)))
-		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Pending Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", service.PendingCount)))
+		name, status, desired, running, pending := summarizeService(service)
+		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Service:"), ui.ValueStyle.Render(name))
+		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Status:"), ui.ValueStyle.Render(status))
+		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Desired Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", desired)))
+		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Running Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", running)))
+		fmt.Printf("%s %s\n", ui.KeyStyle.Render("Pending Count:"), ui.ValueStyle.Render(fmt.Sprintf("%d", pending)))
 		fmt.Println("-------------------------------")
 	}
 	return nil
+}
+
+func summarizeService(service types.Service) (name, status string, desired, running, pending int32) {
+	return valueOrEmpty(service.ServiceName), valueOrEmpty(service.Status), service.DesiredCount, service.RunningCount, service.PendingCount
 }

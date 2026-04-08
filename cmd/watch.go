@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
+	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/davidtiberius/ecs-helper/internal/aws"
 	"github.com/davidtiberius/ecs-helper/internal/ui"
 	"github.com/spf13/cobra"
@@ -95,41 +96,38 @@ func describeDeployment(cmd *cobra.Command, client *ecs.Client) (line string, co
 		return "", false, true, fmt.Errorf("service not found: %s", watchService)
 	}
 
-	svc := out.Services[0]
-	primaryFound := false
-	for _, d := range svc.Deployments {
+	line, complete, failed = summarizePrimaryDeployment(out.Services[0].Deployments)
+	return line, complete, failed, nil
+}
+
+func summarizePrimaryDeployment(deployments []types.Deployment) (line string, complete bool, failed bool) {
+	for _, d := range deployments {
 		if valueOrEmpty(d.Status) != "PRIMARY" {
 			continue
 		}
 
-		primaryFound = true
-		rollout := string(d.RolloutState)
-		reason := valueOrEmpty(d.RolloutStateReason)
-		reason = strings.TrimSpace(reason)
+		reason := strings.TrimSpace(valueOrEmpty(d.RolloutStateReason))
 		if reason == "" {
 			reason = "-"
 		}
 
 		line = fmt.Sprintf(
 			"rollout=%s desired=%d running=%d pending=%d reason=%s",
-			rollout,
+			string(d.RolloutState),
 			d.DesiredCount,
 			d.RunningCount,
 			d.PendingCount,
 			reason,
 		)
 
-		if rollout == "FAILED" {
-			return line, false, true, nil
+		switch string(d.RolloutState) {
+		case "COMPLETED":
+			return line, true, false
+		case "FAILED":
+			return line, false, true
+		default:
+			return line, false, false
 		}
-		if rollout == "COMPLETED" {
-			return line, true, false, nil
-		}
-		return line, false, false, nil
 	}
-
-	if !primaryFound {
-		return "No PRIMARY deployment found yet", false, false, nil
-	}
-	return line, false, false, nil
+	return "No PRIMARY deployment found yet", false, false
 }
