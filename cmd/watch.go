@@ -8,8 +8,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/davidtiberius/ecs-helper/internal/aws"
-	"github.com/davidtiberius/ecs-helper/internal/ui"
+	"github.com/dreynolds/ecs-helper/internal/aws"
+	"github.com/dreynolds/ecs-helper/internal/ui"
 	"github.com/spf13/cobra"
 )
 

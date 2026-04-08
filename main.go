@@ -1,6 +1,6 @@
 package main
 
-import "github.com/davidtiberius/ecs-helper/cmd"
+import "github.com/dreynolds/ecs-helper/cmd"
 
 func main() {
     cmd.Execute()

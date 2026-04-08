@@ -5,13 +5,13 @@ A CLI for inspecting and monitoring Amazon ECS clusters and services.
 ## Installation
 
 ```bash
-go install github.com/davidtiberius/ecs-helper@latest
+go install github.com/dreynolds/ecs-helper@latest
 ```
 
 Or build from source:
 
 ```bash
-git clone https://github.com/davidtiberius/ecs-helper
+git clone https://github.com/dreynolds/ecs-helper
 cd ecs-helper
 go build -o ecs-helper .
 ```
@@ -62,7 +62,7 @@ ecs-helper watch --cluster my-cluster --service my-service
 
 ## CI
 
-[![CI](https://github.com/davidtiberius/ecs-helper/actions/workflows/ci.yml/badge.svg)](https://github.com/davidtiberius/ecs-helper/actions/workflows/ci.yml)
+[![CI](https://github.com/dreynolds/ecs-helper/actions/workflows/ci.yml/badge.svg)](https://github.com/dreynolds/ecs-helper/actions/workflows/ci.yml)
 
 Tests run automatically on every push and pull request via GitHub Actions.
 

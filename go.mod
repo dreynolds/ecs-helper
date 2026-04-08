@@ -1,4 +1,4 @@
-module github.com/davidtiberius/ecs-helper
+module github.com/dreynolds/ecs-helper
 
 go 1.26.1
 
